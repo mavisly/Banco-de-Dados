@@ -20,7 +20,7 @@ INSERT INTO tb_produtos(nome, quantidade, preco)
 values ("banana",200, 12.00);
 INSERT INTO tb_produtos(nome, quantidade, preco) 
 values ("uva",1200, 30.00);
-INSERT INTO tb_produtos(nome, quantidade, preco) 
+INSERT INTO tb_produtos(nomeproduto, quantidade, preco) 
 values ("pêra",500, 2.99);
 
 SELECT * FROM tb_produtos; -- usado para visualizar todos os dados da tabela
@@ -46,4 +46,56 @@ ALTER TABLE tb_produtos ADD descricao varchar(255); -- adiciona atributo (ADD)
 ALTER TABLE tb_produtos DROP descricao; -- deleta atributo (DROP)
 
 ALTER TABLE tb_produtos CHANGE nome nomeproduto VARCHAR(255);  -- altera o atributo da tabela (CHANGE)
+
+SELECT * FROM tb_produtos ORDER BY nomeproduto ASC; -- order by é usado para ordenar / asc é ordem crescente / desc é ordem decrescente
+
+SELECT * FROM tb_produtos WHERE preco BETWEEN 3.00 AND 12.00; -- between é o critério para a busca, mostra os resultados ENTRE x e y
+
+SELECT * FROM tb_produtos WHERE preco IN (3.00,10.00,12.00); -- busca com mais de um critério
+
+SELECT * FROM tb_produtos WHERE nomeproduto LIKE "l%"; -- like é usado para busca com texto, o "l%" significa que o nome busca precisa começar com l
+
+USE db_quitanda;
+
+CREATE TABLE tb_categoria( -- criação de nova tabela para começar a parte de associação
+	id bigint auto_increment,
+	descricao varchar(255) not null,
+	primary key (id)
+);
+
+INSERT INTO tb_categoria (descricao) values ("Fruta"); -- alimentação da tabela
+INSERT INTO tb_categoria (descricao) values ("Verdura");
+INSERT INTO tb_categoria (descricao) values ("Legume");
+
+SELECT * FROM tb_categoria; -- visualização da tabela
+
+-- Adicionando a nova coluna
+ALTER TABLE tb_produtos ADD categoria_id bigint;
+
+-- Adicionando a constraint
+ALTER TABLE tb_produtos ADD CONSTRAINT fk_produtos_categorias 
+FOREIGN KEY (categoria_id) REFERENCES tb_categoria (id);
+
+INSERT INTO tb_produtos( -- inserindo novos dados na tb_produtos
+    nomeproduto, quantidade, preco, categoria_id
+) values("Pitaya", 10, 15.00, 1);
+
+INSERT INTO tb_produtos(
+    nomeproduto, quantidade, preco, categoria_id
+) values("Agrião", 15, 3.00, 2);
+
+INSERT INTO tb_produtos(
+    nomeproduto, quantidade, preco, categoria_id
+) values("Cenoura", 18, 3.50, 3);
+
+SELECT nomeproduto, quantidade, preco from tb_produtos -- selecionando os atributos da tabela produtos
+INNER JOIN tb_categoria ON tb_categoria.id = tb_produtos.categoria_id; -- busca com INNER JOIN (mostra os dados relacionados das duas tabelas)
+
+SELECT nomeproduto, quantidade, preco from tb_produtos -- selecionando os atributos da tabela produtos
+LEFT JOIN tb_categoria ON tb_categoria.id = tb_produtos.categoria_id; -- busca com left join
+
+SELECT descricao from tb_categoria -- selecionando o atributo necessário p busca
+RIGHT JOIN tb_produtos ON tb_produtos.categoria_id = tb_categoria.id; -- busca com right join 
+
+
 
